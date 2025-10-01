@@ -1,25 +1,26 @@
 # ⚡ Fitur
-
 - Multi-akun dengan user data dir tersimpan
 - Viewport per akun atau random untuk menghindari deteksi
 - Random query generation
 - Tampilan terminal berwarna (colorama)
 - Konfigurasi akun dan viewport via `.env`
 
-
 ---
 
-
-## 🛠 Prasyarat
+## 🛠 Prasyarat Linux
 - Python 3.10+
 - Node.js
 - Playwright browser (Chromium)
 
+---
+
+## 🛠 Prasyarat Mac 12
+- Selenium
+- Chrome/Firefox
 
 ---
 
-
-## 📦 Instalasi Package
+## 📦 Instalasi Package for Linux
 1. Install Python package dependencies:
 	```sh
 	pip install playwright python-dotenv colorama
@@ -30,9 +31,20 @@
 	```
 	>Catatan: Pastikan chromium terinstall melalui perintah di atas.
 
-
 ---
 
+## 📦 Instalasi Package for Mac 12
+1.  Install dependencies di macOS 12:
+	```sh
+	pip install selenium webdriver-manager python-dotenv colorama
+	brew install --cask chromedriver
+	```
+	>Jika pakai Firefox, install geckodriver juga:
+	```sh
+	brew install geckodriver
+	```
+
+---
 
 ## 🔑 Konfigurasi .env
 Buat file .env di folder yang sama dengan script:
@@ -54,6 +66,11 @@ VIEWPORTS=account1@gmail.com:1600x900
 	```sh
 	python auto_search.py
 	```
+	> untuk Linux
+	```sh
+	python macos.py
+	```
+	> untuk Linux
 2. Pilih akun dengan nomor (default `1` jika tekan Enter).
 3. Tunggu hitung mundur 3 detik, bot akan mulai melakukan pencarian.
 
@@ -62,31 +79,31 @@ VIEWPORTS=account1@gmail.com:1600x900
 
 ## ⚙️ Alur Kerja Bot
 ```pgsql
-          ┌───────────────┐
-          │ Load .env     │
-          │ ACCOUNTS &    │
-          │ VIEWPORTS     │
-          └───────┬───────┘
-                  │
-                  ▼
+		  ┌───────────────┐
+		  │ Load .env     │
+		  │ ACCOUNTS &    │
+		  │ VIEWPORTS     │
+		  └───────┬───────┘
+				  │
+				  ▼
 		┌───────────────────┐
 		│ Pilih akun oleh   │
 		│ user (input)      │
 		└─────────┬─────────┘
 				  │
-                  ▼
+				  ▼
 	   ┌─────────────────────┐
 	   │ Ambil user_data_dir │
 	   │ & viewport akun     │
 	   └──────────┬──────────┘
-                  │
-                  ▼
+				  │
+				  ▼
 	┌───────────────────────────┐
 	│ Launch Chromium dengan    │
 	│ persistent context        │
 	│ (user_data_dir & viewport)│
 	└─────────────┬─────────────┘
-            	  │
+				  │
 				  ▼
 		┌────────────────────┐
 		│ Loop setiap query  │
@@ -107,7 +124,7 @@ VIEWPORTS=account1@gmail.com:1600x900
 ---
 
 ## 📝 Catatan
-- Gunakan `headless=False` agar jendela Chromium terlihat dan mudah debugging.
+- Gunakan `headless=False` agar jendela Chromium terlihat dan mudah debugging (Linux).
 - Jangan jalankan terlalu cepat agar tidak terdeteksi bot oleh Bing.
 - `user_data_dir` unik per akun agar sesi tidak tercampur.
 
