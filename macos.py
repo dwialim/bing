@@ -24,6 +24,16 @@ for item in os.getenv("ACCOUNTS", "").split(","):
 # 🔑 Generate query random
 keywords = [generate_long_query() for _ in range(35)]
 
+# ✍️ Fungsi untuk mengetik dengan delay realistis
+def human_typing(element, text):
+	for char in text:
+		element.send_keys(char)
+		# 80% cepat, 20% agak lambat (simulasi mikir/typo)
+		if random.random() < 0.2:
+			time.sleep(random.uniform(0.3, 0.7))
+		else:
+			time.sleep(random.uniform(0.05, 0.15))
+
 def search_with_selenium(account_name):
 	options = webdriver.ChromeOptions()
 	options.add_argument("--start-maximized")
@@ -38,7 +48,13 @@ def search_with_selenium(account_name):
 			print(Fore.YELLOW + f"[{i}/{len(keywords)}] ({account_name}) Searching: {q}")
 			search_box = driver.find_element(By.NAME, "q")
 			search_box.clear()
-			search_box.send_keys(q)
+
+			# 70% human typing, 30% langsung paste
+			if random.random() < 0.7:
+				human_typing(search_box, q)
+			else:
+				search_box.send_keys(q)
+
 			search_box.send_keys(Keys.ENTER)
 			time.sleep(random.uniform(5, 15))
 
