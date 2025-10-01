@@ -49,7 +49,7 @@
 ## 🔑 Konfigurasi .env
 Buat file .env di folder yang sama dengan script:
 ```sh
-# Akun format: email:path_user_data_dir (bisa lebih dari > 1, pisahkan dengan koma)
+# Akun format: email:path_user_data_dir (bisa > 1, pisahkan dengan koma)
 ACCOUNTS=account1@gmail.com:~/.bingbot/account1@gmail.com,account2@gmail.com:~/.bingbot/account2@gmail.com
 
 # Viewport format: email:widthxheight (optional) bisa > 1 pisahkan dengan koma
