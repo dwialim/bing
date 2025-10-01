@@ -52,7 +52,7 @@ VIEWPORTS=account1@gmail.com:1600x900
 ## 🔨 Menjalankan Bot
 1. Jalankan script:
 	```sh
-	python bot.py
+	python auto_search.py
 	```
 2. Pilih akun dengan nomor (default `1` jika tekan Enter).
 3. Tunggu hitung mundur 3 detik, bot akan mulai melakukan pencarian.
