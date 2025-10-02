@@ -37,6 +37,14 @@ def human_typing(element, text):
 def search_with_selenium(account_name):
 	options = webdriver.ChromeOptions()
 	options.add_argument("--start-maximized")
+
+	# ambil path user_data_dir dari ACCOUNTS
+	user_data_dir = ACCOUNTS.get(account_name)
+	if user_data_dir:
+		options.add_argument(f"--user-data-dir={user_data_dir}")
+		# opsional: bisa juga set profile-directory kalau ada
+		# options.add_argument("--profile-directory=Default")
+
 	driver = webdriver.Chrome(service=Service(ChromeDriverManager().install()), options=options)
 
 	print(Fore.CYAN + f"\n🌐 Membuka Bing untuk akun: {account_name}")
