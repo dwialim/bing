@@ -9,6 +9,11 @@ from keywords import generate_query_android
 from appium import webdriver
 from appium.options.android import UiAutomator2Options
 from appium.webdriver.common.appiumby import AppiumBy
+from selenium.webdriver.common.action_chains import ActionChains
+from selenium.webdriver.common.actions.pointer_input import PointerInput
+from selenium.webdriver.common.actions.action_builder import ActionBuilder
+from dotenv import load_dotenv
+
 
 # ==========================
 # Konfigurasi
@@ -16,7 +21,11 @@ from appium.webdriver.common.appiumby import AppiumBy
 BING_PACKAGE = "com.microsoft.bing"
 BING_ACTIVITY = "com.microsoft.sapphire.app.main.SapphireMainActivity"
 
-QUERIES = [generate_query_android() for _ in range(35)]
+QUERIES = [generate_query_android() for _ in range(20)]
+
+# Default value for oppo reno 11F
+BACKSPACE_X = os.getenv("BACKSPACE_X", "950") # semakin besar value, arahnya semakin ke kanan
+BACKSPACE_Y = os.getenv("BACKSPACE_Y", "2100") # semakin besar value, arahnya semakin ke bawah
 
 LOG_FILE = "bing_autosearch.log"
 
@@ -63,16 +72,33 @@ def input_query(query):
 		driver.press_keycode(char_to_keycode(ch))
 		time.sleep(random.uniform(0.01, 0.02))
 	driver.press_keycode(66)  # Enter
-	time.sleep(random.uniform(2, 3))
+	time.sleep(random.uniform(2, 10))
 
 def clear_search_box(length=50):
-	"""
-	Clear search box dengan menekan backspace.
-	length: jumlah backspace yang ditekan, default 50 (cukup untuk sebagian besar query)
-	"""
-	for _ in range(length):
-		driver.press_keycode(67)  # 67 = KEYCODE_DEL (Backspace)
-		time.sleep(random.uniform(0.01, 0.02))
+	# """
+	# Clear search box dengan menekan backspace.
+	# length: jumlah backspace yang ditekan, default 50 (cukup untuk sebagian besar query)
+	# """
+	# for _ in range(length):
+	# 	driver.press_keycode(67)  # 67 = KEYCODE_DEL (Backspace)
+	# 	time.sleep(random.uniform(0.01, 0.02))
+	"""Tahan tombol backspace selama 10 detik untuk menghapus isi kotak pencarian"""
+	try:
+		logging.info("Menahan tombol backspace selama 5 detik (pakai W3C Actions)...")
+
+		finger = PointerInput("touch", "finger")
+		actions = ActionChains(driver)
+		actions.w3c_actions = ActionBuilder(driver, mouse=finger)
+
+		actions.w3c_actions.pointer_action.move_to_location(BACKSPACE_X, BACKSPACE_Y)
+		actions.w3c_actions.pointer_action.pointer_down()
+		actions.w3c_actions.pointer_action.pause(5)  # tahan 10 detik
+		actions.w3c_actions.pointer_action.pointer_up()
+		actions.perform()
+
+		time.sleep(0.5)
+	except Exception as e:
+		logging.warning(f"Gagal long press backspace: {e}")
 
 def char_to_keycode(ch):
 	"""Map karakter ke keycode Android (hanya huruf kecil & spasi)"""
@@ -89,16 +115,32 @@ def char_to_keycode(ch):
 	return key_map.get(ch.lower(), 62)  # default spasi
 
 def scroll_results():
-	"""Scroll hasil search beberapa kali"""
-	for _ in range(random.randint(2,5)):
-		driver.swipe(500, 1500, 500, 500, 500)
-		time.sleep(random.uniform(0.5, 1.0))
+	# """Scroll hasil search beberapa kali"""
+	# for _ in range(random.randint(2,5)):
+	# 	driver.swipe(500, 1500, 500, 500, 500)
+	# 	time.sleep(random.uniform(0.5, 1.0))
+	"""Scroll hasil search dengan pola acak"""
+	num_scrolls = random.randint(0, 5)
+	logging.info(f"Scrolling {num_scrolls}x dengan variasi acak")
+
+	for i in range(num_scrolls):
+		# posisi awal & akhir scroll dibuat acak
+		start_x = random.randint(400, 600)
+		start_y = random.randint(1300, 1700)
+		end_y   = random.randint(400, 700)
+		duration = random.randint(400, 800)  # milidetik
+
+		driver.swipe(start_x, start_y, start_x, end_y, duration)
+
+		# jeda acak antar scroll
+		delay = random.uniform(0.4, 1.2)
+		time.sleep(delay)
 
 def search_query(query):
 	logging.info(f"Searching: {query}")
 	tap_search_box()
 	input_query(query)
-	# scroll_results()
+	scroll_results()
 
 # ==========================
 # Main

@@ -6,6 +6,17 @@ import time, random, os
 from keywords import generate_long_query
 from colorama import Fore, Style, init
 from dotenv import load_dotenv
+import subprocess, re
+
+def get_screen_size():
+	try:
+		output = subprocess.check_output("xrandr | grep '*' | head -n1", shell=True).decode()
+		match = re.search(r'(\d+)x(\d+)', output)
+		if match:
+			return int(match.group(1)), int(match.group(2))
+	except Exception:
+		pass
+	return 1920, 1080  # default fallback
 
 init(autoreset=True)  # supaya warna reset otomatis
 
@@ -27,24 +38,39 @@ for item in os.getenv("VIEWPORTS", "").split(","):
 		VIEWPORTS[email] = {"width": width, "height": height}
 
 # 🔑 Generate query random
-keywords = [generate_long_query() for _ in range(35)]
+keywords = [generate_query_android() for _ in range(35)]
 
 def search_with_profile(playwright, profile_dir, account_name):
 	# ambil viewport akun, kalau tidak ada buat random
 	viewport = VIEWPORTS.get(account_name) or {
-		"width": random.randint(1200, 1920),
-		"height": random.randint(700, 1080)
+		"width": screen_width,
+		"height": screen_height
 	}
 
 	context = playwright.chromium.launch_persistent_context(
 		user_data_dir=profile_dir,
 		headless=False,
-		# args=["--start-maximized"]
-		args=[f"--window-size={viewport['width']},{viewport['height']}"],
-		viewport=viewport
-		# args=["--window-size=1920,1080"],  # <-- set ukuran jendela secara manual
-		# viewport={"width": 1920, "height": 1080}  # <-- set viewport Playwright
+		channel="msedge",  # <— pakai Edge channel
+		executable_path="/usr/bin/microsoft-edge-stable",  # opsional (pastikan path benar)
+		# args=["--start-fullscreen"],
+		args=[
+			"--start-maximized",
+			"--disable-infobars",  # hilangkan “Chrome is being controlled…” banner
+			"--disable-blink-features=AutomationControlled",  # sembunyikan deteksi automation
+			"--disable-features=AutomationControlled"
+		],
+		viewport=viewport,
 	)
+
+	# context = playwright.chromium.launch_persistent_context(
+	# 	user_data_dir=profile_dir,
+	# 	headless=False,
+	# 	# args=["--start-maximized"]
+	# 	args=[f"--window-size={viewport['width']},{viewport['height']}"],
+	# 	viewport=viewport
+	# 	# args=["--window-size=1920,1080"],  # <-- set ukuran jendela secara manual
+	# 	# viewport={"width": 1920, "height": 1080}  # <-- set viewport Playwright
+	# )
 	page = context.new_page()
 
 	print(Fore.CYAN + f"\n🌐 Membuka Bing untuk akun: {account_name}")

@@ -54,6 +54,13 @@ ACCOUNTS=account1@gmail.com:~/.bingbot/account1@gmail.com,account2@gmail.com:~/.
 
 # Viewport format: email:widthxheight (optional) bisa > 1 pisahkan dengan koma
 VIEWPORTS=account1@gmail.com:1600x900
+
+
+# Default value for oppo reno 11F (sesuaikan dengan tombol backspace pada HP)
+# semakin besar value, arahnya semakin ke kanan
+BACKSPACE_X=950
+# semakin besar value, arahnya semakin ke bawah
+BACKSPACE_Y=2100
 ```
 >Kamu bisa menambahkan akun baru dengan format yang sama. Jika akun tidak ada di VIEWPORTS, bot akan generate ukuran random.
 
